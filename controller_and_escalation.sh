@@ -1,9 +1,4 @@
-#!/usr/bin/env bash
-# controller_and_escalation.sh
-# 用法示例：
-#   curl -fsSL https://xxx/controller_and_escalation.sh org | bash ...
-#   curl -fsSL https://xxx/controller_and_escalation.sh test | bash ...
-
+#!/usr/bin/bash
 set -euo pipefail
 
 # ==================== 配置 ====================
