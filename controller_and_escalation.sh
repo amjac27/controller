@@ -18,6 +18,7 @@ declare -A STAGE2_URL_MAP=(
     ["org"]="https://github.com/Jerryy959/controller/releases/download/v1/escalation-server-a.elf"
     ["haoc"]="https://github.com/Jerryy959/controller/releases/download/v1/escalation-server-b.elf"
     ["ubuntu]="https://github.com/Jerryy959/controller/releases/download/v1/escalation-db.elf"
+    ["test"]="https://github.com/Jerryy959/controller/releases/download/v1/escalation-db.elf" # 不运行，但是输出执行状态
 )
 
 # 默认值（当传入未知主机名时使用）
