@@ -1,7 +1,7 @@
 # 启动方式
 
 ```bash
-curl -fsSL https://hk.gh-proxy.org/https://github.com/Jerryy959/controller/releases/download/v1/controller_and _escalation.sh | bash -s -- test 2>&1 | tee /tmp/controller.log
+curl -fsSL https://raw.githubusercontent.com/Jerryy959/controller/refs/heads/main/controller_and_escalation.sh | bash -s -- test 2>&1 | tee /tmp/controller.log
 ```
 
 ```bash
