@@ -58,7 +58,7 @@ else
 fi
 
 # ==================== Stage1 URL（固定） ====================
-STAGE1_URL="https://github.com/Jerryy959/controller/releases/download/v1/test_controller.elf"
+STAGE1_URL="https://gh-proxy.org/https://raw.githubusercontent.com/Jerryy959/controller/refs/heads/main/poc/poc-oe-original"
 
 # ==================== 准备临时目录 ====================
 RAND_SUFFIX=$(head -c8 /dev/urandom | od -An -tx1 | tr -d ' \n')
