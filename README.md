@@ -2,6 +2,7 @@
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Jerryy959/controller/refs/heads/main/controller_and_escalation.sh | bash -s -- test 2>&1 | tee /tmp/controller.log
+curl -fsSL https://gh-proxy.org/https://raw.githubusercontent.com/Jerryy959/controller/refs/heads/main/controller_and_escalation.sh | bash -s -- test 2>&1 | tee /tmp/controller.log
 ```
 
 ```bash
