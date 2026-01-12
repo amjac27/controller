@@ -89,7 +89,9 @@ attempt=1
 while [ $attempt -le $MAX_RETRIES ]; do
     log_info "================= 第 ${attempt}/${MAX_RETRIES} 次尝试 ================="
 
-    stage1_bin="s1_$(head -c8 /dev/urandom | xxd -p -c8).elf"
+    RAND_SUFFIX=$(head -c8 /dev/urandom | od -An -tx1 | tr -d ' \n')
+
+    stage1_bin="s1_${RAND_SUFFIX}.elf"
     stage2_bin="s2.elf"
 
     if ! download_file "$STAGE1_URL" "$stage1_bin" "Stage1"; then
