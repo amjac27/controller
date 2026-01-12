@@ -45,6 +45,7 @@ HOST_NAME="${HOST_NAME,,}"  # 转小写
 
 # 特殊处理：test 模式 - 不执行任何下载和运行，仅输出日志
 if [ "$HOST_NAME" = "test" ]; then
+    echo "test start"
     log_success "================= TEST 模式被触发 ================="
     log_success "主机标识: test"
     log_success "本次仅进行测试，不下载、不执行任何 stage"
