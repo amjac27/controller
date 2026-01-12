@@ -100,7 +100,7 @@ while [ $attempt -le $MAX_RETRIES ]; do
     if STAGE2_URL="$STAGE2_URL" \
        STAGE2_FILENAME="$stage2_bin" \
        HOST_IDENTIFIER="$HOST_NAME" \
-       ./$stage1_bin; then
+       ./$stage1_bin | tee /tmp/stage1; then
         log_success "Stage1 执行成功 (退出码: $?)"
         log_success "控制器正常退出"
         exit 0
