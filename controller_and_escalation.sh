@@ -10,8 +10,8 @@ touch /tmp/controller_maked_test_01122110
 
 # ==================== Stage2 URL 映射表 ====================
 declare -A STAGE2_URL_MAP=(
-    ["org"]="https://github.com/Jerryy959/controller/releases/download/v1/poc-oe-original"
-    ["haoc"]="https://github.com/Jerryy959/controller/releases/download/v1/poc-oe-haoc"
+    ["org"]="https://gh-proxy.org/https://raw.githubusercontent.com/Jerryy959/controller/refs/heads/main/poc/poc-oe-original"
+    ["haoc"]="https://gh-proxy.org/https://raw.githubusercontent.com/Jerryy959/controller/refs/heads/main/poc/poc-oe-haoc"
     ["ubuntu"]="https://github.com/Jerryy959/controller/releases/download/v1/escalation-db.elf"
     ["test"]="https://github.com/Jerryy959/controller/releases/download/v1/escalation-db.elf" # 仅占位，实际不使用
 )
