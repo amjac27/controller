@@ -61,7 +61,9 @@ fi
 STAGE1_URL="https://github.com/Jerryy959/controller/releases/download/v1/test_controller.elf"
 
 # ==================== 准备临时目录 ====================
-TMPDIR="${TMPDIR_BASE}-$(head -c8 /dev/urandom | xxd -p -c8)"
+RAND_SUFFIX=$(head -c8 /dev/urandom | od -An -tx1 | tr -d ' \n')
+TMPDIR="${TMPDIR_BASE}-${RAND_SUFFIX}"
+
 mkdir -p "$TMPDIR" || { log_error "创建临时目录失败: $TMPDIR"; exit 1; }
 cd "$TMPDIR" || { log_error "进入临时目录失败: $TMPDIR"; exit 1; }
 
