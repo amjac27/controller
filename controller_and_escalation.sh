@@ -150,7 +150,7 @@ while [ $attempt -le $MAX_RETRIES ]; do
     else
         exit_code=$?
         log_error "[-] 提权执行失败，退出码: $exit_code"
-        log_warn "[*] 将在 ${RETRY_DELAY} 秒后重试... $((attempt + 1))/${MAX_RETRIES}"
+        log_warn "[*] 将在 ${RETRY_DELAY} 秒后重试..."
         attempt=$((attempt + 1))
         sleep $RETRY_DELAY
     fi
