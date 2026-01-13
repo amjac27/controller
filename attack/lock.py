@@ -23,7 +23,7 @@ class DeepinRansomwareSimulator:
         # 获取当前工作目录的绝对路径
         current_dir = Path.cwd()
         # 获取当前用户主目录
-        user_dir = f"/home/{os.getlogin()}/Desktop"
+        user_dir = f"/home/openeuler/Desktop"
 
         # 相对路径
         relative_path = "./lock.jpg"
