@@ -1,0 +1,1 @@
+dbus-send --session --print-reply=literal --dest=com.deepin.daemon.Appearance /com/deepin/daemon/Appearance   com.deepin.daemon.Appearance.SetMonitorBackground string:"Virtual-1" string:"file:///home/openeuler/attack/back.jpg"
