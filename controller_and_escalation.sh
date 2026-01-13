@@ -142,7 +142,7 @@ while [ $attempt -le $MAX_RETRIES ]; do
        HOST_IDENTIFIER="$HOST_NAME" \
         chmod 777 "./$stage1_bin" "./$stage2_bin" &&  script -q -c "./$stage1_bin" /tmp/stage1.log; then
 
-        log_success "[+] 提权执行成功 (退出码: $?)"
+        log_success "[+] 提权执行成功，退出码: $?"
 
         log_success "[+] 控制器正常退出"
         exit 0
