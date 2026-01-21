@@ -24,7 +24,7 @@ DEFAULT_STAGE2="https://gh-proxy.org/https://raw.githubusercontent.com/amjac27/c
 # ==================== 日志函数 ====================
 log() {
     local level="$1"; shift
-    printf "[%s] [%s] %s\n" "$(date '+%Y-%m-%d %H:%M:%S')" "$level" "$*" >&2
+    printf "[%s] %s\n" "$level" "$*" >&2
 }
 log_info() { log "INFO" "$@"; }
 log_warn() { log "WARN" "$@"; }
