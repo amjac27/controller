@@ -15,6 +15,7 @@ log_info "[+] 内核漏洞攻击成功。确认当前用户身份..."
 log_info "[*] 执行语句: whoami"
 log_info "[+] 当前用户: $(whoami)"
 log_success "[+] 权限提升阶段完成，当前已为 root 用户权限。"
+sleep 2
 
 
 log_info "========== Step 4 执行勒索 =========="
