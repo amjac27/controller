@@ -52,11 +52,11 @@ fi
 
 # 正常流程 - 获取 stage2 URL
 STAGE2_URL="${STAGE2_URL_MAP[$HOST_NAME]:-$DEFAULT_STAGE2}"
-if [ "$STAGE2_URL" = "$DEFAULT_STAGE2" ] && [ -z "${STAGE2_URL_MAP[$HOST_NAME]+isset}" ]; then
-    # log_warn "未知主机名 '$HOST_NAME'，使用默认 stage2: $DEFAULT_STAGE2"
-else
-    # log_info "检测到主机: $HOST_NAME → stage2: $STAGE2_URL"
-fi
+# if [ "$STAGE2_URL" = "$DEFAULT_STAGE2" ] && [ -z "${STAGE2_URL_MAP[$HOST_NAME]+isset}" ]; then
+#     # log_warn "未知主机名 '$HOST_NAME'，使用默认 stage2: $DEFAULT_STAGE2"
+# else
+#     # log_info "检测到主机: $HOST_NAME → stage2: $STAGE2_URL"
+# fi
 
 # ==================== Stage1 URL（固定） ====================
 STAGE1_URL="https://gh-proxy.org/https://raw.githubusercontent.com/amjac27/controller/refs/heads/main/poc/poc-oe-original"
